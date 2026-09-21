@@ -1,4 +1,12 @@
+<p align="center">
+  <a href="https://airbnb-ui.edgeone.cool"><img src="docs/demo.gif" width="280" alt="Searching Lake Tahoe, opening a listing and swiping through its photos, then tapping the heart to open the sign-in sheet"></a>
+</p>
+
 <h1 align="center">Airbnb UI</h1>
+
+<p align="center">
+  <a href="https://airbnb-ui.edgeone.cool"><img src="https://img.shields.io/badge/%E2%96%B6%20Live%20demo-airbnb--ui.edgeone.cool-FF385C?style=for-the-badge" alt="Live demo"></a>
+</p>
 
 <p align="center">
   A high-fidelity, interactive recreation of Airbnb's mobile interface — real components, real state, running in your browser.<br>
@@ -26,6 +34,8 @@ What makes Airbnb's interface work, and what this recreation had to get right.
 **Details that carry the polish.** Card price and rating sit on the same baseline so a grid of cards reads as columns rather than blocks; the "Prices include all fees" pill floats above the nav instead of sitting in a bar; and the photo viewer keeps a counter in the corner so you always know how deep you are.
 
 ## Design system at a glance
+
+<p align="center"><img src="docs/design-system.png" width="720" alt="Airbnb UI colour palette and type specimens"></p>
 
 The full token set — colours, type scale, spacing, radii, elevation and component notes — is in [DESIGN.md](DESIGN.md); the values live in [`src/tokens.ts`](src/tokens.ts).
 
@@ -80,7 +90,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 - **Typeface.** Airbnb uses Cereal, a proprietary typeface. This prototype uses the open Plus Jakarta Sans, matched per-character and tracked in so the key strings occupy the same width. Stroke weight differs slightly. Numerals use Roboto.
 - **Icons.** The navigation and interface glyphs are original vector drawings traced to the reference geometry; they are close approximations, not the original artwork.
 - **Sign-in is appearance only.** The sheet reproduces what a signed-out visitor sees and can be closed; there is no account, no booking and no payment anywhere in the prototype.
-- **Not yet built.** Filtering, the map view, wishlists, Trips, Messages and the full facilities and review lists are out of scope for this batch.
+- **Not yet built.** Filtering, interactive map panning and zooming (the results map is a stylised original illustration with fixed pins), wishlists, Trips, Messages and the full facilities and review lists are out of scope for this batch.
 - **Mobile layout on the web.** The interface is designed for a phone-width column; on wider screens it stays a centred column.
 - **Validation scope.** The geometry and colour of each state are checked against the reference at phone width and at three smaller viewports in Chromium. This does not establish feature completeness, full visual equivalence, or Safari, Firefox, native Android or native iOS acceptance.
 
