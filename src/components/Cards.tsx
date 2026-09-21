@@ -20,38 +20,16 @@ export const ListingCard = ({ listing, onOpen, onHeart, height, imageHeight, }: 
           <Text style={type.badgePill}>{listing.badge}</Text>
         </View>) : null}
       <TouchableOpacity accessibilityRole="button" accessibilityLabel="Save to wishlist" onPress={onHeart} style={styles.heart} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <HeartIcon size={24} color="#fff"/>
+        
+        <HeartIcon size={24} color="#304E76" strokeColor="#fff" filled/>
       </TouchableOpacity>
       <View style={styles.textBlock}>
-        <Text style={type.cardTitle} numberOfLines={1}>{listing.title}</Text>
-        <View style={styles.ratingRow}>
-          <StarIcon size={12} color={colors.star}/>
-          <Text style={type.rating}>{String(listing.rating)}</Text>
-        </View>
-        <Text style={type.cardPrice} numberOfLines={1}>{listing.priceForNights}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>);
-export const ResultCard = ({ listing, onOpen, onHeart, }: {
-    listing: Listing;
-    onOpen: () => void;
-    onHeart: () => void;
-}) => (<TouchableOpacity accessibilityRole="button" accessibilityLabel={listing.title} onPress={onOpen} activeOpacity={0.9}>
-    <View style={styles.resultCard}>
-      <Image source={listing.photo} style={styles.resultImage} resizeMode="cover"/>
-      {listing.badge ? (<View style={styles.badge} pointerEvents="none">
-          <Text style={type.badgePill}>{listing.badge}</Text>
-        </View>) : null}
-      <TouchableOpacity accessibilityRole="button" accessibilityLabel="Save to wishlist" onPress={onHeart} style={styles.heart} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-        <HeartIcon size={24} color="#fff"/>
-      </TouchableOpacity>
-      <View style={styles.resultText}>
-        <Text style={type.resultTitle} numberOfLines={1}>{listing.title}</Text>
-        <Text style={type.resultSub} numberOfLines={1}>{listing.location}</Text>
-        <View style={styles.ratingRow}>
-          <StarIcon size={12} color={colors.star}/>
-          <Text style={type.rating}>{String(listing.rating)}</Text>
-          <Text style={type.resultSub}>  ·  {listing.reviews} reviews</Text>
+        <Text style={type.cardTitle} numberOfLines={2}>{listing.title}</Text>
+        <View style={styles.priceRow}>
+          <Text style={type.cardPrice}>{listing.priceForNights}</Text>
+          <View style={styles.dotSep} pointerEvents="none"/>
+          <StarIcon size={11} color={colors.star}/>
+          <Text style={type.cardRatingNum}>{String(listing.rating)}</Text>
         </View>
       </View>
     </View>
@@ -82,13 +60,9 @@ const styles = StyleSheet.create({
         position: 'absolute', top: 8, right: 8,
         width: 32, height: 32, alignItems: 'center', justifyContent: 'center',
     },
-    textBlock: { paddingTop: 8, paddingHorizontal: 2 },
-    ratingRow: { flexDirection: 'row', alignItems: 'center', marginTop: 2, gap: 4 },
-    resultCard: { width: 300 },
-    resultImage: {
-        width: 300, height: 210, borderRadius: radii.cardImage, backgroundColor: colors.mapBlock,
-    },
-    resultText: { paddingTop: 10, width: 300 },
+    textBlock: { paddingTop: 8, paddingHorizontal: 4 },
+    priceRow: { flexDirection: 'row', alignItems: 'center', marginTop: 3, gap: 2, flexWrap: 'nowrap' },
+    dotSep: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: colors.secondary, flexShrink: 0 },
     thumb: { width: 108, marginRight: 12, alignItems: 'center' },
     thumbImg: {
         width: 108, height: 108, borderRadius: 12, backgroundColor: colors.mapBlock,

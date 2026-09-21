@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     left: { width: 145 },
     label: {
         fontFamily: 'PJS', fontSize: 16, lineHeight: 20.7, height: 20.7,
-        fontWeight: '600' as const, letterSpacing: -0.5, color: '#000000',
+        fontWeight: '400' as const, letterSpacing: -0.15, color: '#000000',
     },
     caption: {
         fontFamily: 'PJS', fontSize: 12, lineHeight: 15.6, fontWeight: '400' as const,
@@ -65,5 +65,5 @@ const styles = StyleSheet.create({
     },
     ringDisabled: { backgroundColor: colors.counterCircle },
     hit12: { position: 'absolute', left: 18, top: 18, width: 12, height: 12 },
-    value: { position: 'absolute', left: 40, top: 14, width: 28, textAlign: 'left', ...type.counterValue },
+    value: { position: 'absolute', left: 40, top: 14, width: 28, textAlign: 'center', ...type.counterValue },
 });

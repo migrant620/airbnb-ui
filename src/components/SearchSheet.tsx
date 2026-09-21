@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, useWindowDimensions } from 'react-native';
 import { colors, type, space, radii, shadow } from '../tokens';
 import { CloseIcon, SearchIcon, StarIcon } from './Icons';
 import { Calendar, DayRange } from './Calendar';
@@ -41,6 +41,8 @@ const INACTIVE_H = 60;
 const CARD_GAP = 16;
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 export const SearchSheet = (p: Props) => {
+    const { width } = useWindowDimensions();
+    const wide = width >= 393;
     const toggleRange = (d: Date) => {
         const { start, end } = p.range;
         if (!start || (start && end))
@@ -71,10 +73,19 @@ export const SearchSheet = (p: Props) => {
         title: string;
         value: string;
         valueColor?: string;
-    }) => (<View style={styles.inactiveRow}>
-      <Text style={styles.inactiveTitle}>{title}</Text>
-      <Text style={[styles.inactiveValue, valueColor ? { color: valueColor } : null]} numberOfLines={1}>{value}</Text>
-    </View>);
+    }) => {
+        const digits = (value.match(/\d/g) || []).length;
+        return (<View style={styles.inactiveRow}>
+        <Text style={styles.inactiveTitle}>{title}</Text>
+        <Text style={[
+                styles.inactiveValue,
+                valueColor ? { color: valueColor } : null,
+                digits ? { letterSpacing: -0.15 - (1.6 * digits) / value.length } : null,
+            ]} numberOfLines={1}>
+          {value}
+        </Text>
+      </View>);
+    };
     const StepCard = ({ active, label, onPress, height, children, }: {
         active: boolean;
         label: string;
@@ -88,25 +99,35 @@ export const SearchSheet = (p: Props) => {
         </TouchableOpacity>);
         }
         return (<View style={[styles.stepCard, styles.stepCardActive, { height }]}>
-        <View accessibilityRole="button" accessibilityLabel={label} style={styles.cardLabel}/>
+        
+        <View accessibilityRole="button" accessibilityLabel={label} style={styles.cardLabel} pointerEvents="none"/>
         <View style={styles.stepInner}>{children}</View>
       </View>);
     };
     const padTop = p.step === 'where' ? 18.1 : 23;
     return (<View style={styles.overlay}>
       <TouchableOpacity style={styles.scrim} onPress={p.onClose} accessible={false}/>
-      <View style={styles.panel}>
+      
+      <View style={styles.panel} aria-modal={true} role="dialog">
         
         <View style={styles.header}>
           <TouchableOpacity accessibilityRole="button" onPress={p.onClose} style={styles.closeBtn}>
-            <CloseIcon size={16} color={INK}/>
+            <View accessibilityRole="button" accessibilityLabel="Close" style={styles.closeHit}/>
+            
+            <View style={styles.closeDisc} pointerEvents="none"/>
+            <View pointerEvents="none">
+              <CloseIcon size={16} color={INK}/>
+            </View>
           </TouchableOpacity>
-          <View accessibilityRole="button" accessibilityLabel="Close" style={styles.closeHit}/>
-          <View style={styles.seg}>
+          <View style={[styles.seg, { width: Math.min(204.5, width - 95.7 - 72) }]}>
             {SEG.map((s) => {
             const sel = s === p.category;
+            const icon = s === 'Homes' ? '🏠' : s === 'Experiences' ? '🎈' : '🛎';
             return (<TouchableOpacity key={s} accessibilityRole="tab" accessibilityLabel={s} accessibilityState={{ selected: sel }} onPress={() => p.setCategory(s)} style={styles.segBtn}>
+                  
+                  <Text style={styles.segIcon} aria-hidden={true}>{icon}</Text>
                   <Text style={sel ? styles.segSel : styles.segUnsel}>{s}</Text>
+                  {sel ? <View style={styles.segUnderline} pointerEvents="none"/> : null}
                 </TouchableOpacity>);
         })}
           </View>
@@ -129,6 +150,8 @@ export const SearchSheet = (p: Props) => {
                         <Text style={styles.destSub} numberOfLines={2}>{d.sub}</Text>
                       </View>
                     </TouchableOpacity>))}
+                  
+                  <View style={styles.destFade} pointerEvents="none"/>
                 </View>
               </View>) : (<InactiveRow title="Where" value={p.destination ?? 'Nearby'} valueColor={INK}/>)}
           </StepCard>
@@ -137,9 +160,24 @@ export const SearchSheet = (p: Props) => {
 
           <StepCard active={p.step === 'when'} label={PICKER.when} height={p.step === 'when' ? ACTIVE_H.when : INACTIVE_H} onPress={() => p.setStep('when')}>
             {p.step === 'when' ? (<View style={[styles.stepBody, { paddingTop: padTop }]}>
-                <Text style={styles.stepTitle}>When?</Text>
+                <Text style={styles.stepTitleBold}>When?</Text>
+                
+                <View style={styles.dateSeg} pointerEvents="none" aria-hidden={true}>
+                  <View style={styles.dateSegPill}>
+                    <Text style={styles.dateSegPillText}>Dates</Text>
+                  </View>
+                  <Text style={styles.dateSegText}>Flexible</Text>
+                </View>
                 <View style={styles.calendarWrap}>
-                  <Calendar year={2026} months={[8, 9]} range={p.range} onSelect={toggleRange}/>
+                  <Calendar year={2026} months={[8, 9]} range={p.range} onSelect={toggleRange} today={new Date(2026, 8, 19)}/>
+                </View>
+                <View style={styles.flexChips} pointerEvents="none" aria-hidden={true}>
+                  <View style={[styles.chip, styles.chipExact]}>
+                    <Text style={styles.chipExactText}>Exact dates</Text>
+                  </View>
+                  <View style={styles.chip}><Text style={styles.chipText}>± 1 day</Text></View>
+                  <View style={styles.chip}><Text style={styles.chipText}>± 2 days</Text></View>
+                  <View style={styles.chip}><Text style={styles.chipText}>± 3 days</Text></View>
                 </View>
               </View>) : (<InactiveRow title="When" value={rangeText()}/>)}
           </StepCard>
@@ -148,7 +186,7 @@ export const SearchSheet = (p: Props) => {
 
           <StepCard active={p.step === 'who'} label={PICKER.who} height={p.step === 'who' ? ACTIVE_H.who : INACTIVE_H} onPress={() => p.setStep('who')}>
             {p.step === 'who' ? (<View style={[styles.stepBody, { paddingTop: padTop }]}>
-                <Text style={styles.stepTitle}>Who?</Text>
+                <Text style={styles.stepTitleBold}>Who?</Text>
                 <View style={styles.counters}>
                   <CounterRow label="Adults" caption="Ages 13 or above" value={p.guests.adults} min={0} max={16} onDec={() => setG('adults', -1)} onInc={() => setG('adults', 1)}/>
                   <CounterRow label="Children" caption="Ages 2 – 12" value={p.guests.children} min={0} max={15} onDec={() => setG('children', -1)} onInc={() => setG('children', 1)}/>
@@ -163,7 +201,11 @@ export const SearchSheet = (p: Props) => {
           <TouchableOpacity accessibilityRole="button" accessibilityLabel={footerLeft} onPress={p.onClear} style={styles.footerLeft}>
             <Text style={styles.footerText}>{footerLeft}</Text>
           </TouchableOpacity>
-          <TouchableOpacity accessibilityRole="button" accessibilityLabel={footerRight} onPress={() => (isWhen ? p.setStep('who') : p.onSearch())} style={[styles.searchBtn, isWhen && styles.searchBtnWhen]}>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel={footerRight} onPress={() => (isWhen ? p.setStep('who') : p.onSearch())} style={[styles.searchBtn, wide ? (isWhen ? styles.searchBtnWhen : styles.searchBtnSearch) : styles.searchBtnNarrow]}>
+            
+            {wide && !isWhen ? (<View style={styles.searchBtnGlyph} pointerEvents="none">
+                <SearchIcon size={18} color={colors.white}/>
+              </View>) : null}
             <Text style={[styles.footerRight, isWhen && styles.footerRightWhen]}>{footerRight}</Text>
           </TouchableOpacity>
         </View>
@@ -179,11 +221,14 @@ const styles = StyleSheet.create({
     },
     header: { position: 'absolute', top: 0, left: 0, right: 0, height: 70, zIndex: 2 },
     closeBtn: { position: 'absolute', right: 16, top: 14.9, width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-    closeHit: { position: 'absolute', right: 32, top: 31, width: 16, height: 16 },
-    seg: { position: 'absolute', top: 56, left: 95.7, width: 204.5, height: 13, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-    segBtn: { height: 13, alignItems: 'center', justifyContent: 'center' },
-    segSel: { fontFamily: 'PJS', fontSize: 10, lineHeight: 13, fontWeight: '700' as const, letterSpacing: -0.2, color: INK_BLACK },
-    segUnsel: { fontFamily: 'PJS', fontSize: 10, lineHeight: 13, fontWeight: '400' as const, letterSpacing: -0.2, color: INK_SECONDARY },
+    closeDisc: { position: 'absolute', width: 31, height: 31, borderRadius: 15.5, backgroundColor: colors.white },
+    closeHit: { position: 'absolute', right: 16, top: 16.1, width: 16, height: 16 },
+    seg: { position: 'absolute', top: 24, left: 95.7, width: 204.5, height: 45, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+    segBtn: { height: 45, alignItems: 'center' },
+    segIcon: { fontSize: 26, lineHeight: 26, height: 26, marginBottom: 6 },
+    segUnderline: { position: 'absolute', top: 49, alignSelf: 'center', width: 36, height: 4, borderRadius: 2, backgroundColor: INK_BLACK },
+    segSel: { fontFamily: 'PJS', fontSize: 10, lineHeight: 13, fontWeight: '500' as const, letterSpacing: -0.2, color: INK_BLACK },
+    segUnsel: { fontFamily: 'PJS', fontSize: 10, lineHeight: 13, fontWeight: '500' as const, letterSpacing: -0.2, color: INK_SECONDARY },
     body: { position: 'absolute', top: 70, left: 0, right: 0, bottom: 49 },
     bodyInner: { paddingTop: 31.2, paddingHorizontal: 16, paddingBottom: 16 },
     stepCard: {
@@ -196,15 +241,23 @@ const styles = StyleSheet.create({
     stepBody: { paddingHorizontal: 23, paddingBottom: 8 },
     stepTitle: {
         fontFamily: 'PJS', fontSize: 20, lineHeight: 25.8, height: 25.8,
+        fontWeight: '500' as const, letterSpacing: -0.28, color: INK,
+    },
+    stepTitleBold: {
+        fontFamily: 'PJS', fontSize: 20, lineHeight: 25.8, height: 25.8,
         fontWeight: '700' as const, letterSpacing: -0.28, color: INK,
     },
+    destFade: {
+        position: 'absolute', left: 0, right: 0, bottom: 7.6, height: 28.1,
+        backgroundImage: `linear-gradient(to bottom, rgba(255,255,255,0) 0%, ${colors.white} 100%)`,
+    } as unknown as import('react-native').ViewStyle,
     searchInput: {
         flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.hairline,
         borderRadius: 12, paddingHorizontal: 23, height: 56, marginTop: 19.1, marginBottom: 0, gap: 11,
     },
     caption: {
         fontFamily: 'PJS', fontSize: 12, lineHeight: 15.6, height: 15.6,
-        fontWeight: '600' as const, letterSpacing: -0.348, color: INK, marginTop: 8, marginBottom: 4.1,
+        fontWeight: '400' as const, letterSpacing: -0.229, color: INK, marginTop: 8, marginBottom: 4.1,
     },
     destList: { marginHorizontal: -8 },
     destRow: { height: 72, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 },
@@ -215,17 +268,42 @@ const styles = StyleSheet.create({
         fontWeight: '600' as const, letterSpacing: -0.33, color: INK,
     },
     destSub: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.195, color: INK_SECONDARY },
-    calendarWrap: { marginTop: 4 },
+    calendarWrap: { marginTop: 26, height: 300, overflow: 'hidden' },
+    dateSeg: {
+        flexDirection: 'row', alignItems: 'center', backgroundColor: colors.chipBg,
+        borderRadius: 16, height: 32, marginTop: 14, paddingHorizontal: 3,
+    },
+    dateSegPill: {
+        flex: 1, height: 26, borderRadius: 13, backgroundColor: colors.white,
+        alignItems: 'center', justifyContent: 'center',
+        shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 1 }, elevation: 1,
+    },
+    dateSegPillText: { fontFamily: 'PJS', fontSize: 13, lineHeight: 17, fontWeight: '600' as const, color: INK },
+    dateSegText: { flex: 1, textAlign: 'center', fontFamily: 'PJS', fontSize: 13, lineHeight: 17, fontWeight: '400' as const, color: INK },
+    flexChips: {
+        position: 'absolute', left: 23, right: -6, bottom: 6,
+        flexDirection: 'row', alignItems: 'center', gap: 8,
+    },
+    chip: {
+        height: 32, borderRadius: 16, backgroundColor: colors.chipBg,
+        paddingHorizontal: 14, alignItems: 'center', justifyContent: 'center',
+    },
+    chipExact: { backgroundColor: colors.white, borderWidth: 1.5, borderColor: INK },
+    chipText: { fontFamily: 'PJS', fontSize: 13, lineHeight: 17, fontWeight: '400' as const, color: INK },
+    chipExactText: { fontFamily: 'PJS', fontSize: 13, lineHeight: 17, fontWeight: '600' as const, color: INK },
     counters: { marginTop: 7.75 },
     inactiveRow: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 19 },
     inactiveTitle: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, height: 18.2, fontWeight: '600' as const, letterSpacing: -0.15, color: INK_SECONDARY },
-    inactiveValue: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, height: 18.2, fontWeight: '400' as const, letterSpacing: -0.15, color: INK_BLACK },
+    inactiveValue: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, height: 18.2, fontWeight: '600' as const, letterSpacing: -0.15, color: INK_BLACK },
     inputPlaceholder: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.242, color: INK_SECONDARY },
     footer: { position: 'absolute', bottom: 0, left: 0, right: 0, height: 49, flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-start', paddingHorizontal: 24, borderTopWidth: 1, borderTopColor: colors.hairlineSoft, zIndex: 2 },
     footerLeft: { paddingVertical: 6 },
     footerText: { fontFamily: 'PJS', fontSize: 16, lineHeight: 20, fontWeight: '600' as const, color: INK },
-    searchBtn: { position: 'absolute', left: 273.8, top: 2.5, backgroundColor: colors.reserve, borderRadius: 24, paddingHorizontal: 14, paddingVertical: 12 },
-    searchBtnWhen: { left: 271.7 },
+    searchBtn: { position: 'absolute', top: 2.5, backgroundColor: colors.searchPink, borderRadius: 24, paddingHorizontal: 14, paddingVertical: 12 },
+    searchBtnSearch: { left: 238.4, width: 130, paddingLeft: 49.2 },
+    searchBtnGlyph: { position: 'absolute', left: 16.6, top: 0, bottom: 0, justifyContent: 'center' },
+    searchBtnWhen: { left: 271.7, backgroundColor: INK },
+    searchBtnNarrow: { right: 24 },
     footerRight: { fontFamily: 'PJS', fontSize: 15, lineHeight: 20, fontWeight: '700' as const, color: colors.white },
     footerRightWhen: { letterSpacing: 0.2625 },
 });

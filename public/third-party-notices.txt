@@ -9,8 +9,11 @@ FONTS
 ------------------------------------------------------------
 
 - Roboto (Regular 400, Medium 500, Bold 700)
-  Source: the upstream Google Roboto project distribution.
-  Licence: Apache License 2.0 (Google Roboto Project).
+  Source: mirrored from the sibling Tiimo project's font assets, which carry the
+  licence text bundled with the upstream copy.
+  Licence: SIL Open Font License 1.1, as stated by the licence file shipped
+  with this build (the current Google Fonts release of Roboto is OFL; older
+  Apache-2.0 releases predate this copy).
   Use: numeric strings (prices, ratings, dates, counts), per the design brief.
   Full text: assets/fonts/Roboto-OFL.txt
 
@@ -32,7 +35,8 @@ original works produced for this prototype:
   prompts. They are NOT screenshots, recolourings or derivatives of any
   Airbnb, host or third-party photograph, and carry no third-party
   copyright. They are distributed under the prototype's noncommercial
-  study licence.
+  study licence. See the project's internal content manifest for the
+  per-image record.
 
 - Map background (Results screen): drawn from primitives (roads, a water
   body, blocks) in react-native-svg. It is a stylised illustration, not a

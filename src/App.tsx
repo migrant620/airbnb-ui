@@ -12,9 +12,11 @@ import { LoginSheet } from './components/LoginSheet';
 import { SearchSheet, Guests } from './components/SearchSheet';
 import { DayRange } from './components/Calendar';
 import { detailListing } from './data';
+import { useVariableWeightFont } from './webfont';
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 function Shell() {
     const [fontsLoaded, fontError] = useFonts(fontFiles);
+    useVariableWeightFont();
     const insets = useSafeAreaInsets();
     const feedRef = React.useRef<ScrollView>(null);
     const [screen, setScreen] = React.useState<'explore' | 'results' | 'detail'>('explore');
@@ -47,11 +49,13 @@ function Shell() {
     const datesText = (() => {
         const f = (dt: Date | null) => (dt ? `${MONTHS[dt.getMonth()]} ${dt.getDate()}` : null);
         const a = f(range.start);
-        const b = f(range.end);
-        if (a && b)
-            return `${a} – ${b}`;
-        if (a)
-            return a;
+        if (a) {
+            if (range.end)
+                return `${a} – ${f(range.end)}`;
+            const next = new Date(range.start as Date);
+            next.setDate(next.getDate() + 1);
+            return `${a} – ${MONTHS[next.getMonth()]} ${next.getDate()}`;
+        }
         return 'Sep 30 – Oct 1';
     })();
     const guestTotal = guests.adults + guests.children;
@@ -63,6 +67,11 @@ function Shell() {
     const openSearch = () => {
         setSearchStep('where');
         setSearchOpen(true);
+    };
+    const openStep = (s: 'where' | 'when' | 'who') => {
+        setSearchStep(s);
+        if (s === 'when' && !range.start)
+            setRange({ start: new Date(2026, 8, 30), end: null });
     };
     const onSearch = () => {
         setSearchOpen(false);
@@ -84,9 +93,9 @@ function Shell() {
 
       {screen === 'results' ? (<ResultsScreen datesText={datesText} guestsText={guestsText} onBack={() => { setScreen('explore'); setActiveNav('explore'); }} onFilters={() => { }} onOpenListing={() => openListing('results')} onHeart={() => setLoginOpen(true)} activeNav={activeNav} onNav={setActiveNav}/>) : null}
 
-      {screen === 'detail' ? (<ListingDetail photoIndex={photoIndex} onBack={() => setScreen(detailReturn)} onShare={() => { }} onHeart={() => setLoginOpen(true)} onOpenPhoto={() => { setPhotoOpen(true); }} onReserve={() => setLoginOpen(true)}/>) : null}
+      {screen === 'detail' ? (<ListingDetail photoIndex={photoIndex} onBack={() => setScreen(detailReturn)} onShare={() => { }} onHeart={() => setLoginOpen(true)} onOpenPhoto={() => { setPhotoOpen(true); }} onPhotoChange={setPhotoIndex} onReserve={() => setLoginOpen(true)}/>) : null}
 
-      {searchOpen ? (<SearchSheet step={searchStep} setStep={setSearchStep} category={searchCategory} setCategory={setSearchCategory} destination={destination} pickDestination={setDestination} range={range} setRange={setRange} guests={guests} guestsTouched={guestsTouched} setGuests={updateGuests} onClose={() => setSearchOpen(false)} onClear={onClear} onSearch={onSearch}/>) : null}
+      {searchOpen ? (<SearchSheet step={searchStep} setStep={openStep} category={searchCategory} setCategory={setSearchCategory} destination={destination} pickDestination={setDestination} range={range} setRange={setRange} guests={guests} guestsTouched={guestsTouched} setGuests={updateGuests} onClose={() => setSearchOpen(false)} onClear={onClear} onSearch={onSearch}/>) : null}
 
       {photoOpen ? (<PhotoViewer startIndex={photoIndex} onClose={() => setPhotoOpen(false)} onShare={() => { }} onHeart={() => setLoginOpen(true)}/>) : null}
 

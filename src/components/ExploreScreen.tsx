@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
+import { Svg, Path } from 'react-native-svg';
 import { colors, type, space } from '../tokens';
 import { SearchPillWrap, CategoryTabs, BottomNav, FooterNote } from './Chrome';
 import { ListingCard } from './Cards';
@@ -51,7 +52,14 @@ const CardRow = ({ row, onOpenListing, onHeart, }: {
 }) => (<View style={styles.row}>
     <View style={[styles.headBlock, { marginTop: row.padTop }]}>
       <Text style={type.sectionTitle}>{row.title}</Text>
-      {row.subtitle ? <Text style={[type.subtitle, styles.subtitle]}>{row.subtitle}</Text> : null}
+      {row.subtitle ? (<>
+          <Text style={[type.subtitle, styles.subtitle]}>{row.subtitle}</Text>
+          <View style={styles.rowArrow} pointerEvents="none" aria-hidden={true}>
+            <Svg width={14} height={14} viewBox="0 0 24 24">
+              <Path d="M4 12h15M13 5.5 19.5 12 13 18.5" stroke={colors.ink} strokeWidth={2.2} fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            </Svg>
+          </View>
+        </>) : null}
     </View>
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardRail} style={{ marginTop: row.railGap }}>
       {row.items.map((l, i) => (<View key={l.id} style={styles.cardSlot}>
@@ -93,6 +101,11 @@ const styles = StyleSheet.create({
     feedInner: { paddingTop: 0 },
     row: {},
     headBlock: { paddingLeft: 26.2 },
+    rowArrow: {
+        position: 'absolute', right: 10, top: -3,
+        width: 27, height: 27, borderRadius: 13.5, backgroundColor: colors.chipBg,
+        alignItems: 'center', justifyContent: 'center',
+    },
     subtitle: { width: 298.8, marginTop: 0 },
     cardRail: { paddingHorizontal: space.contentPad, gap: space.cardGap, paddingVertical: 0 },
     cardSlot: { width: space.cardWidth },

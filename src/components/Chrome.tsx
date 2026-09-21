@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { Svg, Path, Circle } from 'react-native-svg';
 import { colors, fonts, type, space, radii, shadow } from '../tokens';
-import { SearchIcon, HomeIcon, WishlistIcon, TripsIcon, MessagesIcon, PersonCircleIcon } from './Icons';
+import { SearchIcon, MagnifierIcon, WishlistIcon, TripsIcon, MessagesIcon, PersonCircleIcon } from './Icons';
 export const SearchPill = ({ onPress }: {
     onPress: () => void;
 }) => (<TouchableOpacity accessibilityRole="button" accessibilityLabel="Start your search" onPress={onPress} style={[styles.pill, shadow.pill]} activeOpacity={0.7}>
@@ -13,31 +14,37 @@ export const SearchPillWrap = ({ onPress }: {
 }) => (<View style={styles.pillWrap}>
     <SearchPill onPress={onPress}/>
   </View>);
-export const CategoryTabs = ({ active, onSelect, thumbs, }: {
+const TABS: {
+    key: string;
+    icon: string;
+    track?: number;
+}[] = [
+    { key: 'All', icon: '🌍', track: -0.075 },
+    { key: 'Homes', icon: '🏠' },
+    { key: 'Experiences', icon: '🎈' },
+    { key: 'Services', icon: '🛎' },
+];
+export const CategoryTabs = ({ active, onSelect, }: {
     active: string;
     onSelect: (k: string) => void;
-    thumbs?: Record<string, number>;
-}) => {
-    const tabs = ['All', 'Homes', 'Experiences', 'Services'];
-    return (<View style={styles.tabsWrap}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsInner}>
-        {tabs.map((t) => {
-            const sel = t === active;
-            const bold = sel || t === 'All';
-            const thumb = thumbs?.[t];
-            return (<TouchableOpacity key={t} accessibilityRole="tab" accessibilityLabel={t} accessibilityState={{ selected: sel }} onPress={() => onSelect(t)} style={styles.tabBtn}>
-              <View style={styles.tabIconBox}>
-                {thumb ? (<Image source={thumb} style={styles.tabThumb} resizeMode="cover"/>) : (<View style={styles.tabThumbFallback}/>)}
-              </View>
-              <Text style={bold ? type.tabSelected : type.tab}>{t}</Text>
-              {sel ? <View style={styles.tabUnderline}/> : null}
-            </TouchableOpacity>);
-        })}
-      </ScrollView>
-    </View>);
-};
+}) => (<View style={styles.tabsWrap}>
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsInner}>
+      {TABS.map(({ key: t, icon, track }) => {
+        const sel = t === active;
+        return (<TouchableOpacity key={t} accessibilityRole="tab" accessibilityLabel={t} accessibilityState={{ selected: sel }} onPress={() => onSelect(t)} style={[styles.tabBtn, sel ? styles.tabBtnSelected : null]}>
+            <View style={styles.tabIconBox}>
+              <Text style={styles.tabEmoji} aria-hidden={true}>
+                {icon}
+              </Text>
+            </View>
+            
+            <Text style={[type.tab, track === undefined ? null : { letterSpacing: track }]}>{t}</Text>
+          </TouchableOpacity>);
+    })}
+    </ScrollView>
+  </View>);
 const NAV = [
-    { key: 'explore', label: 'Explore', Icon: HomeIcon },
+    { key: 'explore', label: 'Explore', Icon: MagnifierIcon },
     { key: 'wishlists', label: 'Wishlists', Icon: WishlistIcon },
     { key: 'trips', label: 'Trips', Icon: TripsIcon },
     { key: 'messages', label: 'Messages', Icon: MessagesIcon },
@@ -60,9 +67,11 @@ export const BottomNav = ({ active, onSelect, }: {
 export const FooterNote = () => (<>
     <View style={styles.footerPill} pointerEvents="none"/>
     <TouchableOpacity accessibilityRole="button" accessibilityLabel="Prices include all fees" style={styles.footerNote} activeOpacity={1}>
-      <View style={styles.footerDot} pointerEvents="none">
-        <View style={styles.footerDotStem}/>
-        <View style={styles.footerDotPoint}/>
+      <View style={styles.footerTag} pointerEvents="none">
+        <Svg width={17} height={17} viewBox="0 0 24 24">
+          <Path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58s1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42z" fill={colors.continuePink}/>
+          <Circle cx="7.5" cy="7.5" r="1.6" fill="#FFFFFF"/>
+        </Svg>
       </View>
       <Text style={type.footerNote} numberOfLines={1}>Prices include all fees</Text>
     </TouchableOpacity>
@@ -87,7 +96,9 @@ const styles = StyleSheet.create({
         paddingLeft: space.tabPadLeft,
         paddingRight: space.tabPadRight,
     },
-    tabIconBox: { width: space.tabIconBox, height: space.tabIconBox, marginRight: space.tabIconGap },
+    tabIconBox: { width: space.tabIconBox, height: space.tabIconBox, marginRight: space.tabIconGap, alignItems: 'center', justifyContent: 'center' },
+    tabEmoji: { fontSize: 15, lineHeight: 16, textAlign: 'center' },
+    tabBtnSelected: { backgroundColor: colors.chipSelected, borderRadius: space.tabsHeight / 2 },
     tabThumb: { width: space.tabIconBox, height: space.tabIconBox, borderRadius: 8 },
     tabThumbFallback: {
         width: space.tabIconBox, height: space.tabIconBox, borderRadius: 8,
@@ -117,10 +128,8 @@ const styles = StyleSheet.create({
         width: space.footerNoteWidth, height: space.footerNoteHeight,
         flexDirection: 'row', alignItems: 'center',
     },
-    footerDot: {
-        width: 16, height: 16, borderRadius: 8, backgroundColor: colors.continuePink,
-        alignItems: 'center', justifyContent: 'center', marginRight: 5,
+    footerTag: {
+        width: 17, height: 17, marginRight: 6,
+        transform: [{ rotate: '-18deg' }],
     },
-    footerDotStem: { position: 'absolute', left: 4.6, top: 2.6, width: 1.4, height: 4.2, backgroundColor: colors.ink },
-    footerDotPoint: { position: 'absolute', left: 4.6, top: 8.0, width: 1.4, height: 1.4, borderRadius: 0.7, backgroundColor: colors.ink },
 });
