@@ -188,4 +188,19 @@ export const shadow = {
     nav: { shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 6, shadowOffset: { width: 0, height: -2 }, elevation: 3 },
     sheet: { shadowColor: '#000', shadowOpacity: 0.15, shadowRadius: 12, shadowOffset: { width: 0, height: -4 }, elevation: 5 },
 } as const;
+export const themes = {
+    light: colors,
+    dark: {
+        ...colors,
+        white: '#1A1A1A',
+        page: '#121212',
+        surface: '#1A1A1A',
+        ink: '#EDEDED',
+        black: '#000000',
+        secondary: '#A0A0A0',
+        tertiary: '#8A8A8A',
+        hairline: '#2C2C2C',
+        hairlineSoft: '#242424',
+    },
+} as const;
 export const frame = { width: 393, height: 777 } as const;
