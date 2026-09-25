@@ -83,6 +83,10 @@ npm run build:web
 
 The static output is written to `dist/`. Serve that directory over HTTP or HTTPS; opening `index.html` directly as a local file is not supported.
 
+## Demo build
+
+The published demo at <https://airbnb-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-09-25 (EdgeOne deployment `dpl21qecr5nm`, source revision `ddfd9144`).
+
 ## Scope and limitations
 
 - **First batch of screens, still being finished.** The Explore screens and the search sheet (Where, When, Who) are the most complete. The search-results list, the listing detail page, the photo viewer and the sign-in sheet are built and reachable but have not yet been brought to the same standard.
