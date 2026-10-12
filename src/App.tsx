@@ -19,157 +19,298 @@ import { SearchSheet, Guests } from './components/SearchSheet';
 import { DayRange } from './components/Calendar';
 import { detailListing, detailListingCard, Listing } from './data';
 import { useVariableWeightFont } from './webfont';
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/** Bottom-nav tabs that are logged-out placeholders (GOAL §4 P1). They render the EmptyState screen
+ *  instead of the explore feed; "explore" is the only fully implemented feed tab. */
 const LOGGED_OUT_TABS = ['wishlists', 'trips', 'messages', 'login'] as const;
-function WishlistsScreen({ favorites, onOpenListing, onRemove, activeNav, onNav, }: {
-    favorites: Listing[];
-    onOpenListing: () => void;
-    onRemove: (l: Listing) => void;
-    activeNav: string;
-    onNav: (k: string) => void;
+
+/**
+ * Wishlists tab with locally saved stays.
+ *
+ * The product shows a logged-out placeholder until you save something; once the prototype holds at
+ * least one saved stay the tab lists them instead. The list reuses the explore rail's own card so a
+ * saved stay looks exactly like it did in the feed, and a tap on a card's heart removes it. All of
+ * this is in-memory only — nothing is sent anywhere and nothing survives a reload.
+ */
+function WishlistsScreen({
+  favorites,
+  onOpenListing,
+  onRemove,
+  activeNav,
+  onNav,
+}: {
+  favorites: Listing[];
+  onOpenListing: () => void;
+  onRemove: (l: Listing) => void;
+  activeNav: string;
+  onNav: (k: string) => void;
 }) {
-    return (<View style={styles.wishRoot}>
+  return (
+    <View style={styles.wishRoot}>
       <View style={styles.wishHeader}>
         <Text style={type.sheetSectionTitle}>Wishlists</Text>
       </View>
-      <ScrollView style={styles.wishScroll} contentContainerStyle={styles.wishGrid} showsVerticalScrollIndicator={false}>
-        {favorites.map((l) => (<View key={l.id} style={styles.wishSlot}>
-            <ListingCard listing={l} onOpen={onOpenListing} onHeart={() => onRemove(l)} favorite/>
-          </View>))}
+      <ScrollView
+        style={styles.wishScroll}
+        contentContainerStyle={styles.wishGrid}
+        showsVerticalScrollIndicator={false}
+      >
+        {favorites.map((l) => (
+          <View key={l.id} style={styles.wishSlot}>
+            <ListingCard listing={l} onOpen={onOpenListing} onHeart={() => onRemove(l)} favorite />
+          </View>
+        ))}
       </ScrollView>
-      <BottomNav active={activeNav} onSelect={onNav}/>
-    </View>);
+      <BottomNav active={activeNav} onSelect={onNav} />
+    </View>
+  );
 }
+
 function Shell() {
-    const [fontsLoaded, fontError] = useFonts(fontFiles);
-    useVariableWeightFont();
-    const insets = useSafeAreaInsets();
-    const feedRef = React.useRef<ScrollView>(null);
-    const [screen, setScreen] = React.useState<'explore' | 'results' | 'detail'>('explore');
-    const [detailReturn, setDetailReturn] = React.useState<'explore' | 'results'>('explore');
-    const [activeCategory, setActiveCategory] = React.useState('All');
-    const [activeNav, setActiveNav] = React.useState('explore');
-    const [feedScrollY, setFeedScrollY] = React.useState(0);
-    const [searchOpen, setSearchOpen] = React.useState(false);
-    const [searchStep, setSearchStep] = React.useState<'where' | 'when' | 'who'>('where');
-    const [searchCategory, setSearchCategory] = React.useState('Homes');
-    const [destination, setDestination] = React.useState<string | null>(null);
-    const [range, setRange] = React.useState<DayRange>({ start: null, end: null });
-    const [guests, setGuests] = React.useState<Guests>({ adults: 1, children: 0, infants: 0, pets: 0 });
-    const [guestsTouched, setGuestsTouched] = React.useState(false);
-    const [loginOpen, setLoginOpen] = React.useState(false);
-    const [photoOpen, setPhotoOpen] = React.useState(false);
-    const [photoIndex, setPhotoIndex] = React.useState(0);
-    const [reviewsOpen, setReviewsOpen] = React.useState(false);
-    const [amenitiesOpen, setAmenitiesOpen] = React.useState(false);
-    const [filtersOpen, setFiltersOpen] = React.useState(false);
-    const [filterCount, setFilterCount] = React.useState(0);
-    const [favorites, setFavorites] = React.useState<Listing[]>([]);
-    const toggleFavorite = React.useCallback((l: Listing) => {
-        setFavorites((prev) => prev.some((f) => f.id === l.id) ? prev.filter((f) => f.id !== l.id) : [...prev, l]);
-    }, []);
-    const restoreFeed = React.useCallback(() => {
-        setTimeout(() => {
-            if (screen === 'explore')
-                feedRef.current?.scrollTo({ y: feedScrollY, animated: false });
-        }, 0);
-    }, [screen, feedScrollY]);
-    React.useEffect(() => {
-        if (screen === 'explore')
-            restoreFeed();
-    }, [screen, restoreFeed]);
-    if (!fontsLoaded && !fontError)
-        return null;
-    const datesText = (() => {
-        const f = (dt: Date | null) => (dt ? `${MONTHS[dt.getMonth()]} ${dt.getDate()}` : null);
-        const a = f(range.start);
-        if (a) {
-            if (range.end)
-                return `${a} – ${f(range.end)}`;
-            const next = new Date(range.start as Date);
-            next.setDate(next.getDate() + 1);
-            return `${a} – ${MONTHS[next.getMonth()]} ${next.getDate()}`;
-        }
-        return 'Sep 30 – Oct 1';
-    })();
-    const guestTotal = guests.adults + guests.children;
-    const guestsText = guestTotal > 0 ? `${guestTotal} ${guestTotal === 1 ? 'guest' : 'guests'}` : '2 guests';
-    const openListing = (from: 'explore' | 'results') => {
-        setDetailReturn(from);
-        setScreen('detail');
-    };
-    const openSearch = () => {
-        setSearchStep('where');
-        setSearchOpen(true);
-    };
-    const openStep = (s: 'where' | 'when' | 'who') => {
-        setSearchStep(s);
-        if (s === 'when' && !range.start)
-            setRange({ start: new Date(2026, 8, 30), end: null });
-    };
-    const onSearch = () => {
-        setSearchOpen(false);
-        setScreen('results');
-    };
-    const onClear = () => {
-        setDestination(null);
-        setRange({ start: null, end: null });
-        setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
-        setGuestsTouched(false);
-    };
-    const updateGuests = (g: Guests) => {
-        setGuests(g);
-        setGuestsTouched(true);
-    };
-    const handleNav = (k: string) => {
-        setActiveNav(k);
-        setScreen('explore');
-    };
-    return (<View style={[styles.root, { paddingTop: insets.top }]}>
-      <StatusBar style="dark"/>
-      {screen === 'explore' ? (activeNav === 'wishlists' && favorites.length > 0 ? (<WishlistsScreen favorites={favorites} onOpenListing={() => openListing('explore')} onRemove={toggleFavorite} activeNav={activeNav} onNav={handleNav}/>) : LOGGED_OUT_TABS.includes(activeNav as typeof LOGGED_OUT_TABS[number]) ? (<EmptyState tabKey={activeNav as 'wishlists' | 'trips' | 'messages' | 'login'} onLogin={() => setLoginOpen(true)} onBack={() => setActiveNav('explore')} activeNav={activeNav} onNav={handleNav}/>) : (<ExploreScreen activeCategory={activeCategory} onCategory={setActiveCategory} onOpenListing={() => openListing('explore')} onHeart={() => setLoginOpen(true)} onOpenSearch={openSearch} onNav={handleNav} activeNav={activeNav} scrollRef={feedRef} onScrollY={setFeedScrollY}/>)) : null}
+  const [fontsLoaded, fontError] = useFonts(fontFiles);
+  useVariableWeightFont();
+  const insets = useSafeAreaInsets();
+  const feedRef = React.useRef<ScrollView>(null);
 
-      {screen === 'results' ? (<ResultsScreen datesText={datesText} guestsText={guestsText} onBack={() => { setScreen('explore'); setActiveNav('explore'); }} onFilters={() => setFiltersOpen(true)} filterCount={filterCount} onOpenListing={() => openListing('results')} onHeart={() => setLoginOpen(true)} favoriteIds={favorites.map((f) => f.id)} onToggleFavorite={toggleFavorite} activeNav={activeNav} onNav={handleNav}/>) : null}
+  const [screen, setScreen] = React.useState<'explore' | 'results' | 'detail'>('explore');
+  const [detailReturn, setDetailReturn] = React.useState<'explore' | 'results'>('explore');
+  const [activeCategory, setActiveCategory] = React.useState('All');
+  const [activeNav, setActiveNav] = React.useState('explore');
+  const [feedScrollY, setFeedScrollY] = React.useState(0);
 
-      {screen === 'detail' ? (<ListingDetail photoIndex={photoIndex} onBack={() => setScreen(detailReturn)} onShare={() => { }} onHeart={() => setLoginOpen(true)} isFavorite={favorites.some((f) => f.id === detailListingCard.id)} onOpenPhoto={() => { setPhotoOpen(true); }} onPhotoChange={setPhotoIndex} onOpenReviews={() => setReviewsOpen(true)} onOpenAmenities={() => setAmenitiesOpen(true)} onReserve={() => setLoginOpen(true)}/>) : null}
+  const [searchOpen, setSearchOpen] = React.useState(false);
+  const [searchStep, setSearchStep] = React.useState<'where' | 'when' | 'who'>('where');
+  const [searchCategory, setSearchCategory] = React.useState('Homes');
+  const [destination, setDestination] = React.useState<string | null>(null);
+  const [range, setRange] = React.useState<DayRange>({ start: null, end: null });
+  const [guests, setGuests] = React.useState<Guests>({ adults: 1, children: 0, infants: 0, pets: 0 });
+  // False until the guest stepper is used: the sheet shows "Add guests" on a fresh open even though
+  // the underlying default already counts one adult (the device behaves the same way).
+  const [guestsTouched, setGuestsTouched] = React.useState(false);
 
-      {searchOpen ? (<SearchSheet step={searchStep} setStep={openStep} category={searchCategory} setCategory={setSearchCategory} destination={destination} pickDestination={setDestination} range={range} setRange={setRange} guests={guests} guestsTouched={guestsTouched} setGuests={updateGuests} onClose={() => setSearchOpen(false)} onClear={onClear} onSearch={onSearch}/>) : null}
+  const [loginOpen, setLoginOpen] = React.useState(false);
+  const [photoOpen, setPhotoOpen] = React.useState(false);
+  const [photoIndex, setPhotoIndex] = React.useState(0);
+  const [reviewsOpen, setReviewsOpen] = React.useState(false);
+  const [amenitiesOpen, setAmenitiesOpen] = React.useState(false);
+  const [filtersOpen, setFiltersOpen] = React.useState(false);
+  const [filterCount, setFilterCount] = React.useState(0);
+  /* Local wishlist: the stays saved from the detail and results screens, held in memory only. This
+   * is the prototype's own stand-in for the account-backed collection the product would show. */
+  const [favorites, setFavorites] = React.useState<Listing[]>([]);
+  const toggleFavorite = React.useCallback((l: Listing) => {
+    setFavorites((prev) =>
+      prev.some((f) => f.id === l.id) ? prev.filter((f) => f.id !== l.id) : [...prev, l],
+    );
+  }, []);
 
-      {photoOpen ? (<PhotoViewer startIndex={photoIndex} onClose={() => setPhotoOpen(false)} onShare={() => { }} onHeart={() => setLoginOpen(true)}/>) : null}
+  const restoreFeed = React.useCallback(() => {
+    setTimeout(() => {
+      if (screen === 'explore') feedRef.current?.scrollTo({ y: feedScrollY, animated: false });
+    }, 0);
+  }, [screen, feedScrollY]);
 
-      {loginOpen ? <LoginSheet onClose={() => setLoginOpen(false)}/> : null}
+  React.useEffect(() => {
+    if (screen === 'explore') restoreFeed();
+  }, [screen, restoreFeed]);
 
-      {reviewsOpen ? <ReviewsScreen onClose={() => setReviewsOpen(false)}/> : null}
+  if (!fontsLoaded && !fontError) return null;
 
-      {amenitiesOpen ? <AmenitiesScreen onClose={() => setAmenitiesOpen(false)}/> : null}
+  // The results header quotes a range even when only a check-in was chosen: on the device a single
+  // picked date fixes a one-night stay, so the header reads "Sep 30 – Oct 1" while the search sheet
+  // still shows the lone "Sep 30" (see the guest-count and results screens).
+  const datesText = (() => {
+    const f = (dt: Date | null) => (dt ? `${MONTHS[dt.getMonth()]} ${dt.getDate()}` : null);
+    const a = f(range.start);
+    if (a) {
+      if (range.end) return `${a} – ${f(range.end)}`;
+      const next = new Date(range.start as Date);
+      next.setDate(next.getDate() + 1);
+      return `${a} – ${MONTHS[next.getMonth()]} ${next.getDate()}`;
+    }
+    return 'Sep 30 – Oct 1';
+  })();
+  const guestTotal = guests.adults + guests.children;
+  const guestsText = guestTotal > 0 ? `${guestTotal} ${guestTotal === 1 ? 'guest' : 'guests'}` : '2 guests';
 
-      {filtersOpen ? (<FiltersSheet onClose={() => setFiltersOpen(false)} onApply={setFilterCount}/>) : null}
-    </View>);
+  const openListing = (from: 'explore' | 'results') => {
+    setDetailReturn(from);
+    setScreen('detail');
+  };
+  const openSearch = () => {
+    setSearchStep('where');
+    setSearchOpen(true);
+  };
+  /* Opening the date step with nothing held shows September 30 already picked, exactly as the
+   * interface does (its where step still reads "Add dates"; the pick only appears from the date
+   * step onward). A tap on that same day re-holds it rather than clearing. */
+  const openStep = (s: 'where' | 'when' | 'who') => {
+    setSearchStep(s);
+    if (s === 'when' && !range.start) setRange({ start: new Date(2026, 8, 30), end: null });
+  };
+  const onSearch = () => {
+    setSearchOpen(false);
+    setScreen('results');
+  };
+  const onClear = () => {
+    setDestination(null);
+    setRange({ start: null, end: null });
+    setGuests({ adults: 1, children: 0, infants: 0, pets: 0 });
+    setGuestsTouched(false);
+  };
+  const updateGuests = (g: Guests) => {
+    setGuests(g);
+    setGuestsTouched(true);
+  };
+  /* Any bottom-nav tap lands on the explore level so a logged-out tab shows its placeholder and the
+   * Explore tab returns to the feed; results/detail keep their own back affordances. */
+  const handleNav = (k: string) => {
+    setActiveNav(k);
+    setScreen('explore');
+  };
+
+  return (
+    <View style={[styles.root, { paddingTop: insets.top }]}>
+      <StatusBar style="dark" />
+      {screen === 'explore' ? (
+        activeNav === 'wishlists' && favorites.length > 0 ? (
+          <WishlistsScreen
+            favorites={favorites}
+            onOpenListing={() => openListing('explore')}
+            onRemove={toggleFavorite}
+            activeNav={activeNav}
+            onNav={handleNav}
+          />
+        ) : LOGGED_OUT_TABS.includes(activeNav as typeof LOGGED_OUT_TABS[number]) ? (
+          <EmptyState
+            tabKey={activeNav as 'wishlists' | 'trips' | 'messages' | 'login'}
+            onLogin={() => setLoginOpen(true)}
+            onBack={() => setActiveNav('explore')}
+            activeNav={activeNav}
+            onNav={handleNav}
+          />
+        ) : (
+          <ExploreScreen
+            activeCategory={activeCategory}
+            onCategory={setActiveCategory}
+            onOpenListing={() => openListing('explore')}
+            onHeart={() => setLoginOpen(true)}
+            onOpenSearch={openSearch}
+            onNav={handleNav}
+            activeNav={activeNav}
+            scrollRef={feedRef}
+            onScrollY={setFeedScrollY}
+          />
+        )
+      ) : null}
+
+      {screen === 'results' ? (
+        <ResultsScreen
+          datesText={datesText}
+          guestsText={guestsText}
+          onBack={() => { setScreen('explore'); setActiveNav('explore'); }}
+          onFilters={() => setFiltersOpen(true)}
+          filterCount={filterCount}
+          onOpenListing={() => openListing('results')}
+          onHeart={() => setLoginOpen(true)}
+          favoriteIds={favorites.map((f) => f.id)}
+          onToggleFavorite={toggleFavorite}
+          activeNav={activeNav}
+          onNav={handleNav}
+        />
+      ) : null}
+
+      {screen === 'detail' ? (
+        <ListingDetail
+          photoIndex={photoIndex}
+          onBack={() => setScreen(detailReturn)}
+          onShare={() => {}}
+          /* Tapping the detail heart "saves to wishlist", and the reference answers a logged-out save
+           * with the login sheet - the same answer the results screen's own "Save to wishlist" gives.
+           * Both hearts therefore open the sheet; the local wishlist is filled from the results grid. */
+          onHeart={() => setLoginOpen(true)}
+          isFavorite={favorites.some((f) => f.id === detailListingCard.id)}
+          onOpenPhoto={() => { setPhotoOpen(true); }}
+          onPhotoChange={setPhotoIndex}
+          onOpenReviews={() => setReviewsOpen(true)}
+          onOpenAmenities={() => setAmenitiesOpen(true)}
+          onReserve={() => setLoginOpen(true)}
+        />
+      ) : null}
+
+      {searchOpen ? (
+        <SearchSheet
+          step={searchStep}
+          setStep={openStep}
+          category={searchCategory}
+          setCategory={setSearchCategory}
+          destination={destination}
+          pickDestination={setDestination}
+          range={range}
+          setRange={setRange}
+          guests={guests}
+          guestsTouched={guestsTouched}
+          setGuests={updateGuests}
+          onClose={() => setSearchOpen(false)}
+          onClear={onClear}
+          onSearch={onSearch}
+        />
+      ) : null}
+
+      {photoOpen ? (
+        <PhotoViewer
+          startIndex={photoIndex}
+          onClose={() => setPhotoOpen(false)}
+          onShare={() => {}}
+          onHeart={() => setLoginOpen(true)}
+        />
+      ) : null}
+
+      {loginOpen ? <LoginSheet onClose={() => setLoginOpen(false)} /> : null}
+
+      {reviewsOpen ? <ReviewsScreen onClose={() => setReviewsOpen(false)} /> : null}
+
+      {amenitiesOpen ? <AmenitiesScreen onClose={() => setAmenitiesOpen(false)} /> : null}
+
+      {filtersOpen ? (
+        <FiltersSheet onClose={() => setFiltersOpen(false)} onApply={setFilterCount} />
+      ) : null}
+    </View>
+  );
 }
+
 export default function App() {
-    return (<SafeAreaProvider>
+  return (
+    <SafeAreaProvider>
       <View style={styles.stage}>
         <Shell />
       </View>
-    </SafeAreaProvider>);
+    </SafeAreaProvider>
+  );
 }
+
 const styles = StyleSheet.create({
-    root: { flex: 1, backgroundColor: colors.white },
-    wishRoot: { flex: 1, backgroundColor: colors.white },
-    wishHeader: { paddingHorizontal: space.contentPad, paddingTop: 20, paddingBottom: 4 },
-    wishScroll: { flex: 1 },
-    wishGrid: {
-        flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between',
-        paddingHorizontal: space.contentPad, paddingTop: 12, rowGap: 24,
-        paddingBottom: space.navHeight + 40,
-    },
-    wishSlot: { width: space.cardWidth },
-    stage: {
-        width: frame.width,
-        maxWidth: '100%',
-        height: frame.height,
-        maxHeight: '100%',
-        alignSelf: 'center',
-        backgroundColor: colors.white,
-    },
+  root: { flex: 1, backgroundColor: colors.white },
+  /* Wishlists tab: a title over a two-column grid of the saved stays, the same page the explore card
+   * belongs to. The grid keeps two fixed-width cards inside the frame at 393 dp and never widens past
+   * it, so a narrower viewport still scrolls vertically only. */
+  wishRoot: { flex: 1, backgroundColor: colors.white },
+  wishHeader: { paddingHorizontal: space.contentPad, paddingTop: 20, paddingBottom: 4 },
+  wishScroll: { flex: 1 },
+  wishGrid: {
+    flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between',
+    paddingHorizontal: space.contentPad, paddingTop: 12, rowGap: 24,
+    paddingBottom: space.navHeight + 40,
+  },
+  wishSlot: { width: space.cardWidth },
+  stage: {
+    width: frame.width,
+    maxWidth: '100%',
+    height: frame.height,
+    maxHeight: '100%',
+    alignSelf: 'center',
+    backgroundColor: colors.white,
+  },
 });
