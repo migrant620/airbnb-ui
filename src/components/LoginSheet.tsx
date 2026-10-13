@@ -90,7 +90,7 @@ export const LoginSheet = ({ onClose }: { onClose: () => void }) => (
 
     <View style={[at(L.orLineL.x, L.orLineL.y, L.orLineL.w, L.orLineL.h), styles.rule]} pointerEvents="none" />
     <View style={[span(L.orLineR.x, L.orLineR.y, OR_RIGHT, L.orLineR.h), styles.rule]} pointerEvents="none" />
-    <Text style={[type.loginOr, at(L.orText.x, L.orText.y, L.orText.w, L.orText.h), styles.centred, styles.orInk]} numberOfLines={1}>
+    <Text style={[type.loginOr, at(L.orText.x, L.orText.y, L.orText.w, L.orText.h), styles.centred, styles.orInk]}>
       or
     </Text>
 
