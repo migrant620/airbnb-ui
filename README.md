@@ -85,7 +85,7 @@ The static output is written to `dist/`. Serve that directory over HTTP or HTTPS
 
 ## Demo build
 
-The published demo at <https://airbnb-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-10-12 (EdgeOne deployment `dpw9gyq7ne0y`, source revision `40d7a369`).
+The published demo at <https://airbnb-ui.edgeone.cool> is built from this repository. It was last rebuilt and redeployed on 2026-10-13 (EdgeOne deployment `dppdojq5ifdf`, source revision `5c25a900`).
 
 ## Scope and limitations
 
