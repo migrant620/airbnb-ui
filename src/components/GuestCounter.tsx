@@ -105,7 +105,9 @@ const styles = StyleSheet.create({
    * negative margin is the 11.6 dp between the label's line foot (567.97) and that top; the box itself
    * is invisible, only the measured element differs. */
   captionRow: { marginTop: -11.6, height: 48, lineHeight: 48 },
-  counter: { width: 116.2, height: 48, position: 'relative', marginRight: -9 },
+  // R26: all four guest steppers read 1.1 dp right of the reference (icon@341,348/421/495/568 at
+  // x 316.9 vs our 318.0); the -9 right margin over-pushed the pair by that much.
+  counter: { width: 116.2, height: 48, position: 'relative', marginRight: -7.9 },
   cbtn: { position: 'absolute', top: 0, width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
   decPos: { left: 0 },
   incPos: { left: 68.2 },

@@ -260,7 +260,10 @@ export const space = {
   counterRowHeight: 56,
   // Bottom nav: five 75-wide cells between x=4 and x=389, cell box 75 x 56.
   navTop: 721,
-  navHeight: 55,
+  // R26: the gate's ±1 dp run measures every bottom-bar cell (Explore / Wishlists / Trips /
+  // Messages / Log In) at [.., 722.0, .., 56.0] — a 56 dp band whose foot is the viewport's own.
+  // At 55 the whole bar starts 1.0 dp lower and ends 1.0 dp past the frame.
+  navHeight: 56,
   navItemWidth: 75,
   navItemHeight: 56,
   navPadX: 4,
