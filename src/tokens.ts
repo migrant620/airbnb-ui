@@ -69,6 +69,16 @@ export const colors = {
   /* The search sheet card's own top edge, measured off the capture: the row at y=101 dp still reads
    * 223 and the row at y=102 dp reads 255. */
   sheetTopOffset: 101.5,
+  /* The search sheet card's own bottom edge, and the shadow it casts on the plate below it. Measured
+   * the same way as the top edge, down the centre column of A3-search-where: the card's last white
+   * row is y=681, the row at y=682 reads 189, and it recovers to the plate's own 237 by y=688 - so
+   * the card stops 95 dp short of the frame and the plate shows below it, with a 6.5 dp shadow that
+   * starts at 0.20 alpha (189 against a 237 plate) and falls to nothing. A4-when-range ends on the
+   * same row (255 at 681, 209 at 682). The bottom 95 dp (the footer's divider and buttons) sit on
+   * the plate, not on the card: the reference reads 223..236 there, never 255. */
+  sheetBottomInset: 95,
+  sheetShadowHeight: 6.5,
+  sheetShadowTopAlpha: 0.2,
   /* The "Suggested destinations" artwork. The reference paints flat pastel tiles carrying a
    * coloured line drawing, not photographs; both the tile fill and the drawing's stroke are
    * sampled per-pixel inside each 56x56 tile (x 36..91.7, y 257.2..312.9 for the first row). */

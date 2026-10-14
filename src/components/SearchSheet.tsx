@@ -151,6 +151,10 @@ export const SearchSheet = (p: Props) => {
             the header (the 48 dp close target and the column tabs) on the dimmed backdrop, which is
             what the reference does and what makes the close disc legible. */}
         <View style={styles.sheetSurface} pointerEvents="none" />
+        {/* The card stops 95 dp short of the frame and casts its shadow onto the plate below it.
+            Painting the card to the bottom made the whole footer band - the divider at y=714 and the
+            buttons under it - white, where the reference leaves it on the plate (223..236). */}
+        <View style={styles.sheetShadow} pointerEvents="none" />
         {/* Header: 48x48 close target + the 16x16 "Close" description node the device reports. The
             description belongs to the target it describes, so it is nested inside it instead of being
             painted over it; the box it occupies is unchanged (panel right 32 / top 31). */}
@@ -318,8 +322,13 @@ const styles = StyleSheet.create({
   /* The sheet card proper: its top edge, its fill and its rounded corners. Measured at 101.5 dp on
    * the capture (the last dimmed row is y=101 at 223, the first white row is y=102 at 255). */
   sheetSurface: {
-    position: 'absolute', top: colors.sheetTopOffset, left: 0, right: 0, bottom: 0,
+    position: 'absolute', top: colors.sheetTopOffset, left: 0, right: 0, bottom: colors.sheetBottomInset,
     backgroundColor: colors.white, borderTopLeftRadius: radii.sheetTop, borderTopRightRadius: radii.sheetTop,
+  },
+  sheetShadow: {
+    position: 'absolute', bottom: colors.sheetBottomInset - colors.sheetShadowHeight,
+    left: 0, right: 0, height: colors.sheetShadowHeight,
+    backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,${colors.sheetShadowTopAlpha}) 0%, rgba(0,0,0,0) 100%)`,
   },
   header: { position: 'absolute', top: 0, left: 0, right: 0, height: 70, zIndex: 2 },
   closeBtn: { position: 'absolute', right: 16, top: 14.9, width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
