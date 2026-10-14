@@ -60,6 +60,26 @@ export const colors = {
   navActive: '#DA1249',
   pillBorder: '#DDDDDD',
   scrim: 'rgba(0,0,0,0.35)',
+  /* The search sheet's backdrop. The reference does not clear the screen behind the sheet: it dims
+   * the screen the sheet was opened from, and the sheet itself is a card whose top edge sits at
+   * 101.5 dp. Sampled off the capture above that edge the backdrop reads 227-231 (a ~10% black veil
+   * over the near-white explore screen the sheet is opened from), so the sheet's own close disc -
+   * white on white until now - is legible on it. */
+  sheetBackdrop: 'rgba(0,0,0,0.11)',
+  /* The search sheet card's own top edge, measured off the capture: the row at y=101 dp still reads
+   * 223 and the row at y=102 dp reads 255. */
+  sheetTopOffset: 101.5,
+  /* The "Suggested destinations" artwork. The reference paints flat pastel tiles carrying a
+   * coloured line drawing, not photographs; both the tile fill and the drawing's stroke are
+   * sampled per-pixel inside each 56x56 tile (x 36..91.7, y 257.2..312.9 for the first row). */
+  destTileNearby: '#F0F6FB',
+  destTileLake: '#F0F5F1',
+  destTileMountain: '#FDF7F0',
+  destTileCity: '#FEF5F6',
+  destInkNearby: '#4A81B0',
+  destInkLake: '#0A6516',
+  destInkMountain: '#E58D38',
+  destInkCity: '#F2705C',
   iconGray: '#222222',
   ratingPillBg: '#F7F7F7',
   mapBg: '#E8ECEF',

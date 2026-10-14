@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, useWindowDimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { colors, type, space, radii, shadow } from '../tokens';
 import { CloseIcon, SearchIcon, StarIcon } from './Icons';
 import { Calendar, DayRange } from './Calendar';
 import { CounterRow } from './GuestCounter';
+import { DestinationMark } from './DestinationMarks';
 import { destinations } from '../data';
 
 export type Guests = { adults: number; children: number; infants: number; pets: number };
@@ -144,6 +145,12 @@ export const SearchSheet = (p: Props) => {
           scoping the accessibility tree to it would put a tappable backdrop in front of the sheet.
           `aria-modal` is what tells the web layer which subtree is the current one. */}
       <View style={styles.panel} aria-modal={true} role="dialog">
+        {/* The sheet is a raised card, not a full-bleed white page: the reference leaves the screen
+            the sheet was opened from visible - and dimmed - down to the card's top edge at 101.5 dp,
+            and rounds the card's top corners. Painting that edge here instead of on `panel` keeps
+            the header (the 48 dp close target and the column tabs) on the dimmed backdrop, which is
+            what the reference does and what makes the close disc legible. */}
+        <View style={styles.sheetSurface} pointerEvents="none" />
         {/* Header: 48x48 close target + the 16x16 "Close" description node the device reports. The
             description belongs to the target it describes, so it is nested inside it instead of being
             painted over it; the box it occupies is unchanged (panel right 32 / top 31). */}
@@ -195,7 +202,13 @@ export const SearchSheet = (p: Props) => {
                 <View style={styles.destList}>
                   {destinations.map((d) => (
                     <TouchableOpacity key={d.name} accessibilityRole="button" accessibilityLabel={d.name} onPress={() => { p.pickDestination(d.name); p.setStep('when'); }} style={styles.destRow}>
-                      <Image source={d.photo} style={styles.destThumb} />
+                      {/* A flat pastel tile carrying the destination group's line drawing, which is what
+                          the reference paints here - not a photograph. The tile's own fill is sampled off
+                          the capture (240,246,251 for "Nearby" and so on) and the drawing's stroke off the
+                          ink inside it. */}
+                      <View style={[styles.destThumb, { backgroundColor: d.tile }]} pointerEvents="none">
+                        <DestinationMark glyph={d.glyph} size={30} color={d.ink} />
+                      </View>
                       <View style={styles.destText}>
                         <Text style={styles.destName}>{d.name}</Text>
                         <Text style={styles.destSub} numberOfLines={2}>{d.sub}</Text>
@@ -293,14 +306,21 @@ export const SearchSheet = (p: Props) => {
 
 const styles = StyleSheet.create({
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50 },
-  scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.scrim },
+  scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.sheetBackdrop },
   panel: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+  },
+  /* The sheet card proper: its top edge, its fill and its rounded corners. Measured at 101.5 dp on
+   * the capture (the last dimmed row is y=101 at 223, the first white row is y=102 at 255). */
+  sheetSurface: {
+    position: 'absolute', top: colors.sheetTopOffset, left: 0, right: 0, bottom: 0,
     backgroundColor: colors.white, borderTopLeftRadius: radii.sheetTop, borderTopRightRadius: radii.sheetTop,
   },
   header: { position: 'absolute', top: 0, left: 0, right: 0, height: 70, zIndex: 2 },
   closeBtn: { position: 'absolute', right: 16, top: 14.9, width: 48, height: 48, alignItems: 'center', justifyContent: 'center' },
-  closeDisc: { position: 'absolute', width: 31, height: 31, borderRadius: 15.5, backgroundColor: colors.white },
+  /* 40 dp, not 31: the reference's disc measures 40.0 x 40.0 dp (x 333.1..372.8, y 19.1..58.8),
+   * centred in the same 48 dp target the panel already places at right 16 / top 14.9. */
+  closeDisc: { position: 'absolute', width: 40, height: 40, borderRadius: 20, backgroundColor: colors.white },
   /* Relative to the 48 dp target it sits in: right 16 + 16 = the panel's 32, top 14.9 + 16.1 = 31. */
   closeHit: { position: 'absolute', right: 16, top: 16.1, width: 16, height: 16 },
   /* Column tabs: pictogram above label. The label keeps its exact reference slot (top 56,
@@ -373,7 +393,9 @@ const styles = StyleSheet.create({
   /* The destination list is inset 8 dp less than the card copy (rows start at x=28, not 36). */
   destList: { marginHorizontal: -8 },
   destRow: { height: 72, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 },
-  destThumb: { width: 56, height: 56, borderRadius: 10, marginRight: 16, backgroundColor: colors.mapBlock },
+  /* The 56 dp tile carries the group's line drawing centred in it. Its fill is set per row from the
+     colour sampled off the capture, so no background is set here. */
+  destThumb: { width: 56, height: 56, borderRadius: 10, marginRight: 16, alignItems: 'center', justifyContent: 'center' },
   destText: { width: 249 },
   destName: {
     fontFamily: 'PJS', fontSize: 14, lineHeight: 20.4, height: 20.4,
