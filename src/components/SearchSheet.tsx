@@ -307,8 +307,13 @@ export const SearchSheet = (p: Props) => {
 const styles = StyleSheet.create({
   overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 50 },
   scrim: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.sheetBackdrop },
+  /* The sheet's backdrop is an opaque plate, not a window onto the screen below. The reference's own
+   * pixels say so: above the card edge (y = 0..101 dp) it reads a near-uniform 225..235 across the
+   * full width at x = 10/100/300/380 dp, with only the sheet's own tab row and close disc drawn on
+   * it. Leaving the plate transparent let the explore screen's own header bleed through and collide
+   * with this sheet's tab row, which the reference never shows. */
   panel: {
-    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.sheetBackdrop,
   },
   /* The sheet card proper: its top edge, its fill and its rounded corners. Measured at 101.5 dp on
    * the capture (the last dimmed row is y=101 at 223, the first white row is y=102 at 255). */

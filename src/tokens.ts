@@ -60,12 +60,12 @@ export const colors = {
   navActive: '#DA1249',
   pillBorder: '#DDDDDD',
   scrim: 'rgba(0,0,0,0.35)',
-  /* The search sheet's backdrop. The reference does not clear the screen behind the sheet: it dims
-   * the screen the sheet was opened from, and the sheet itself is a card whose top edge sits at
-   * 101.5 dp. Sampled off the capture above that edge the backdrop reads 227-231 (a ~10% black veil
-   * over the near-white explore screen the sheet is opened from), so the sheet's own close disc -
-   * white on white until now - is legible on it. */
-  sheetBackdrop: 'rgba(0,0,0,0.11)',
+  /* The search sheet's backdrop plate: the grey the sheet card floats on. Sampled per-pixel off
+   * A3-search-where above the card's edge (y 5/15/25/35/45/60/80/95 dp x 10/300/380 dp) the
+   * reference reads a near-uniform 225..235 - the sheet's own tab row and close disc are the only
+   * things drawn on it, so this is an opaque plate rather than a window onto the screen below.
+   * Without it the card's white close disc was invisible on white. */
+  sheetBackdrop: '#E3E3E3',
   /* The search sheet card's own top edge, measured off the capture: the row at y=101 dp still reads
    * 223 and the row at y=102 dp reads 255. */
   sheetTopOffset: 101.5,
