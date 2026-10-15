@@ -440,7 +440,9 @@ const styles = StyleSheet.create({
   // reference box so the second line is never clipped to an ellipsis.
   reviewCountText: { textAlign: 'center', letterSpacing: -1.6 },
   chipPill: { backgroundColor: '#F7F7F7', borderRadius: 6, alignItems: 'center', justifyContent: 'center' },
-  divider: { backgroundColor: colors.hairlineSoft },
+  /* A7 reads (221,221,221) at y 677.2 and 696.8 - the section rule and the bottom bar's own top
+     edge - against the (235,235,235) this was painted with, on both A7 and A8. */
+  divider: { backgroundColor: colors.hairline },
   avatarImg: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.mapBlock },
   superhostBadge: { backgroundColor: colors.brand, borderRadius: 4 },
   bandIconBox: { alignItems: 'center', justifyContent: 'center' },
@@ -465,7 +467,7 @@ const styles = StyleSheet.create({
   amenBtnText: { textAlign: 'center' },
   bottomBar: {
     position: 'absolute', left: 0, right: 0, bottom: 0, height: 777 - 696.8,
-    backgroundColor: colors.white, borderTopWidth: 1, borderTopColor: colors.hairlineSoft,
+    backgroundColor: colors.white, borderTopWidth: 1, borderTopColor: colors.hairline,
   },
   priceWas: { color: colors.secondary, textDecorationLine: 'line-through' },
   reserve: { backgroundColor: colors.reserve, borderRadius: 24.6, alignItems: 'center', justifyContent: 'center' },

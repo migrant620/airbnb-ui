@@ -129,7 +129,9 @@ const styles = StyleSheet.create({
   centred: { textAlign: 'center' },
   titleInk: { color: colors.black },
   orInk: { color: colors.black },
-  field: { borderWidth: 1, borderColor: colors.hairline, borderRadius: 12, backgroundColor: colors.white },
+  /* The login sheet's fields carry the same dark stroke as the search sheet's: (140,140,140) at
+     y 379.2 and 438.5 across x 33.1-359.5, not the divider grey. */
+  field: { borderWidth: 1, borderColor: colors.fieldBorder, borderRadius: 12, backgroundColor: colors.white },
   continueBtn: { backgroundColor: colors.continuePink, borderRadius: 8 },
   rule: { backgroundColor: colors.hairlineSoft },
   /* The reference's social buttons are 60 dp rounded squares, not circles: the top row's straight

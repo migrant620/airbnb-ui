@@ -353,7 +353,10 @@ const styles = StyleSheet.create({
   body: { position: 'absolute', top: 70, left: 0, right: 0, bottom: 49 },
   bodyInner: { paddingTop: 31.2, paddingHorizontal: 16, paddingBottom: 16 },
   stepCard: {
-    borderWidth: 1, borderColor: colors.hairline, borderRadius: radii.stepRadius, overflow: 'hidden',
+    /* The capture's field cards carry a (140,140,140) stroke, not a divider's (221,221,221): A3
+       reads 140 at y 165.6 and 220.5 across x 45.1-347.5, which is this card's own top and bottom
+       edge. 81 levels light is the largest single colour error this pass found. */
+    borderWidth: 1, borderColor: colors.fieldBorder, borderRadius: radii.stepRadius, overflow: 'hidden',
     backgroundColor: colors.white, position: 'relative',
   },
   stepCardActive: { borderColor: colors.ink, marginHorizontal: -4 },

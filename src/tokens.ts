@@ -35,6 +35,12 @@ export const colors = {
   tertiary: '#717171',
   hairline: '#DDDDDD',
   hairlineSoft: '#EBEBEB',
+  /* The stroke around an editable field. A divider reads (221,221,221) and a rule (235,235,235),
+     but the frame around a text field is far darker: (140,140,140) on both captures that carry one,
+     at y 165.6 and 220.5 on A3 (the search sheet's own field cards, x 45.1-347.5) and at y 379.2
+     and 438.5 on A10 (the login sheet's fields, x 33.1-359.5). Measured 2026-10-15; the prototype
+     was painting all four with `hairline`, 81 levels too light. */
+  fieldBorder: '#8C8C8C',
   brand: '#FF385C',
   reserve: '#D70466',
   /* The login sheet's primary action fills (242,42,84) — a warmer step than the reserve
