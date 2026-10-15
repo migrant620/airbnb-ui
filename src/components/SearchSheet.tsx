@@ -411,8 +411,11 @@ const styles = StyleSheet.create({
   destList: { marginHorizontal: -8 },
   destRow: { height: 72, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 8 },
   /* The 56 dp tile carries the group's line drawing centred in it. Its fill is set per row from the
-     colour sampled off the capture, so no background is set here. */
-  destThumb: { width: 56, height: 56, borderRadius: 10, marginRight: 16, alignItems: 'center', justifyContent: 'center' },
+     colour sampled off the capture, so no background is set here. R29 read its corner off the
+     raster: the reference cuts 12.2 dp (walk-in distance r*(sqrt2-1) measured 12.1/12.3/12.3/13.0
+     on the four corners, the +0.3 being the usual antialiasing bias), so the tile is a 12 dp
+     rounded square, not the 10 it had been given. */
+  destThumb: { width: 56, height: 56, borderRadius: 12, marginRight: 16, alignItems: 'center', justifyContent: 'center' },
   destText: { width: 249 },
   destName: {
     fontFamily: 'PJS', fontSize: 14, lineHeight: 20.4, height: 20.4,
