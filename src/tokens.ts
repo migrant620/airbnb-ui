@@ -170,7 +170,7 @@ export const type = {
   reserveBtn: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 20, fontWeight: '700' as const, color: colors.white },
   photoCatTitle: { fontFamily: fonts.sans, fontSize: 22, lineHeight: 27, fontWeight: '700' as const, color: colors.ink },
   photoCaption: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 19, fontWeight: '400' as const, color: colors.white },
-  loginTitle: { fontFamily: fonts.sans, fontSize: 26, lineHeight: 32, fontWeight: '700' as const, color: colors.ink },
+  loginTitle: { fontFamily: fonts.sans, fontSize: 26, lineHeight: 32, fontWeight: '700' as const, color: colors.ink, letterSpacing: -0.61 },
   /* "Phone number or email": the medium step carries 1.154x the reference's contrast over the field's
    * own 171.4 dp box. The regular step reads 0.965 there and its advance (169.9 dp) stays inside the
    * box, so the step comes down and the geometry does not move. */
@@ -229,7 +229,7 @@ export const type = {
      comes down: the medium step measures 86.12 of advance and 0.866 of the bold step's contrast, i.e.
      about 1.06 of the reference. */
   pdpChip: { fontFamily: fonts.sans, fontSize: 11.7, lineHeight: 14.2, fontWeight: '500' as const, letterSpacing: -0.5625, color: colors.tertiary },
-  pdpHostName: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 20.7, fontWeight: '600' as const, letterSpacing: -0.56, color: colors.ink },
+  pdpHostName: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 20.7, fontWeight: '600' as const, letterSpacing: -0.26, color: colors.ink },
   pdpHostSub: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.44, color: colors.secondary },
   pdpBlockTitle: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '600' as const, letterSpacing: -0.6, color: colors.ink },
   pdpBlockDesc: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.44, color: colors.secondary },
