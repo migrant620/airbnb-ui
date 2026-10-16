@@ -126,7 +126,7 @@ export const fonts = {
 export const type = {
   // letterSpacing values are measured corrections: the substitute face runs wider than Airbnb Cereal,
   // so each run is tracked in until its advance width matches the reference TextView .
-  searchPill: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 20, fontWeight: '500' as const, letterSpacing: -0.68, color: colors.ink },
+  searchPill: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 20, fontWeight: '500' as const, letterSpacing: -0.68, color: colors.ink },
   /* The category rail sets every chip at one weight - the reference's chosen pill carries 18.0% ink
      over its run and its unchosen neighbours 19.0%, while the prototype at 700/400 measured 33.4% and
      21.1%. Both steps below are the same value, and it is the one the reference measures. */
@@ -214,26 +214,26 @@ export const type = {
    * host name 15.6, block titles 9.5, block descriptions 12.0, price 19.6. */
   /* The three heading runs sit in the frame-width column and the interface centres each painted
    * line inside it, so short lines hang mid-column rather than at the left edge. */
-  pdpTitle: { fontFamily: fonts.sans, fontSize: 26, lineHeight: 32, fontWeight: '700' as const, letterSpacing: -1.15, color: colors.ink, textAlign: 'center' as const },
-  pdpSub: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.966, color: colors.secondary, textAlign: 'center' as const },
-  pdpMeta: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.4, color: colors.secondary, textAlign: 'center' as const },
+  pdpTitle: { fontFamily: fonts.sans, fontSize: 26, lineHeight: 32, fontWeight: '700' as const, letterSpacing: 0.14, color: colors.ink, textAlign: 'center' as const },
+  pdpSub: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.626, color: colors.secondary, textAlign: 'center' as const },
+  pdpMeta: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: 0.0, color: colors.secondary, textAlign: 'center' as const },
   /* "4.97" at 19 dp advances 36.4 dp and the reference box is 34.9, so the run was clipped to "4...".
      The reference's own advance is the 18.2 dp one, and its raster is the heavier step. The tracking
      is what keeps the run inside the box: at -0.25 the text measured 36 dp against a 35 dp client box
      and the browser drew the ellipsis instead of the digits; -0.65 sets the run at 34.0 dp. */
   pdpRating: { fontFamily: fonts.roboto700, fontSize: 18.2, lineHeight: 23.7, fontWeight: '500' as const, letterSpacing: -0.65, color: colors.ink },
-  pdpGuestFav: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 18.4, fontWeight: '700' as const, letterSpacing: -0.62, color: colors.ink },
+  pdpGuestFav: { fontFamily: fonts.sans, fontSize: 14.25, lineHeight: 18.4, fontWeight: '700' as const, letterSpacing: -0.62, color: colors.ink },
   /* "Free cancellation" measures 87.3 dp in the reference at a 14.2 dp line box. The face's own 13 dp
      regular step advances 97.9 and carries 0.865 of the reference's contrast; 11.7 dp at the bold step
      lands the advance on 86.95 but overshoots the total at 1.225, so the size keeps 11.7 dp and the step
      comes down: the medium step measures 86.12 of advance and 0.866 of the bold step's contrast, i.e.
      about 1.06 of the reference. */
-  pdpChip: { fontFamily: fonts.sans, fontSize: 11.7, lineHeight: 14.2, fontWeight: '500' as const, letterSpacing: -0.5625, color: colors.tertiary },
+  pdpChip: { fontFamily: fonts.sans, fontSize: 11.7, lineHeight: 14.2, fontWeight: '500' as const, letterSpacing: -0.46, color: colors.tertiary },
   pdpHostName: { fontFamily: fonts.sans, fontSize: 16, lineHeight: 20.7, fontWeight: '600' as const, letterSpacing: -0.26, color: colors.ink },
-  pdpHostSub: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.44, color: colors.secondary },
-  pdpBlockTitle: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '600' as const, letterSpacing: -0.6, color: colors.ink },
-  pdpBlockDesc: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.44, color: colors.secondary },
-  pdpBody: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 21.1, fontWeight: '400' as const, letterSpacing: -0.38, color: colors.ink },
+  pdpHostSub: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.22, color: colors.secondary },
+  pdpBlockTitle: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '600' as const, letterSpacing: -0.19, color: colors.ink },
+  pdpBlockDesc: { fontFamily: fonts.sans, fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.24, color: colors.secondary },
+  pdpBody: { fontFamily: fonts.sans, fontSize: 15, lineHeight: 21.1, fontWeight: '400' as const, letterSpacing: -0.03, color: colors.ink },
   pdpCounter: { fontFamily: fonts.sans, fontSize: 12, lineHeight: 15.6, fontWeight: '600' as const, letterSpacing: -0.2, color: colors.white },
   pdpPriceNow: { fontFamily: fonts.num, fontSize: 21, lineHeight: 25.8, fontWeight: '500' as const, color: colors.ink },
   pdpPriceNote: { fontFamily: fonts.sans, fontSize: 12.5, lineHeight: 15.6, fontWeight: '400' as const, letterSpacing: -0.36, color: colors.secondary },
