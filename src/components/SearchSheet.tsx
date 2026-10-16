@@ -421,7 +421,7 @@ const styles = StyleSheet.create({
     fontFamily: 'PJS', fontSize: 14, lineHeight: 20.4, height: 20.4,
     fontWeight: '600' as const, letterSpacing: -0.33, color: INK,
   },
-  destSub: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.195, color: INK_SECONDARY },
+  destSub: { fontFamily: 'PJS', fontSize: 14, lineHeight: 18.2, fontWeight: '400' as const, letterSpacing: -0.195, color: '#7C7C7C' },
   /* The grid is clipped after the second October row, as the interface's own viewport is. */
   calendarWrap: { marginTop: 26, height: 300, overflow: 'hidden' },
   /* Dates / Flexible: the interface's own segmented track -- a grey rail with the chosen half as a
